@@ -5,6 +5,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -42,18 +44,29 @@ public class App extends Application {
         } catch (IOException e) {
             System.out.println("Error al crear el fichero: " + e.getMessage());
         }
+        String nombre = formaterFecha(nota.getFecha());// A tener en cuenta --> hay que conseguir la fecha antes de
+                                                       // modificar
         Nota modificadaNota = new Nota("Mi primera nota modificada", "Trabajo",
                 "Este es el contenido modificado de mi primera nota.");
-        String nombre = formaterFecha(nota.getFecha());
+        modificadaNota.setFecha(nota.getFecha());
         try {
             modificarFichero(modificadaNota, nombre);
         } catch (IOException e) {
             System.out.println("Error al modificar el fichero: " + e.getMessage());
         }
+        /*
+         * try {
+         * borrarFichero(modificadaNota, "103026104624.txt");
+         * } catch (IOException e) {
+         * System.out.println("Error al borrar el fichero: " + e.getMessage());
+         * }
+         */
         try {
-            borrarFichero(modificadaNota, "103026102543.txt");
+            Nota notaLeida = leerFichero(nombre);
+            System.out.println("Nota leída del fichero:");
+            System.out.println(notaLeida.toString());
         } catch (IOException e) {
-            System.out.println("Error al borrar el fichero: " + e.getMessage());
+            System.out.println("Error al leer el fichero: " + e.getMessage());
         }
 
     }
@@ -69,9 +82,9 @@ public class App extends Application {
         // Implementación para crear un fichero
 
         // creación del nombre del fichero con la fecha y hora actual
-        LocalDateTime fecha = LocalDateTime.now();
+        LocalDateTime fecha = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
         nota.setFecha(fecha);
-        String nombreFichero = formaterFecha(fecha);
+        String nombreFichero = formaterFecha(nota.getFecha());
         Path ruta = Path.of(nombreFichero);
 
         // Creación del fichero junto con el contenido de la nota
@@ -112,4 +125,30 @@ public class App extends Application {
 
     }
 
+    public static Nota leerFichero(String nombreFichero) throws IOException {
+        // Implementación para leer un fichero
+        Path ruta = Path.of(nombreFichero);
+
+        // Lectura del fichero
+        List<String> lineas = Files.readAllLines(ruta); // Lee todas las líneas del fichero
+        if (lineas.size() >= 3) {
+            String fechaStr = lineas.get(0).replace("Hora de creación: ", "").trim();
+            DateTimeFormatter formateador = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+            LocalDateTime fecha = LocalDateTime.parse(fechaStr, formateador);
+            System.out.println("Fecha leída del fichero: " + fecha);
+            String titulo = lineas.get(1);
+            String categoria = lineas.get(2).replace("Categoría: ", "");
+            StringBuilder contenidoBuilder = new StringBuilder();
+            for (int i = 3; i < lineas.size(); i++) {
+                contenidoBuilder.append(lineas.get(i)).append("\n");
+            }
+            String contenido = contenidoBuilder.toString().trim();
+
+            Nota nota = new Nota(titulo, categoria, contenido);
+            nota.setFecha(fecha);
+            return nota;
+        } else {
+            throw new IOException("El fichero no tiene el formato esperado.");
+        }
+    }
 }
