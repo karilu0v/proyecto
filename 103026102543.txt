@@ -1,0 +1,4 @@
+Hora de creación: null
+Mi primera nota modificada
+Categoría: Trabajo
+Este es el contenido modificado de mi primera nota.
