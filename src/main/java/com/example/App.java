@@ -50,6 +50,11 @@ public class App extends Application {
         } catch (IOException e) {
             System.out.println("Error al modificar el fichero: " + e.getMessage());
         }
+        try {
+            borrarFichero(modificadaNota, "103026102543.txt");
+        } catch (IOException e) {
+            System.out.println("Error al borrar el fichero: " + e.getMessage());
+        }
 
     }
 
@@ -93,16 +98,17 @@ public class App extends Application {
     }
 
     public static void borrarFichero(Nota nota, String nombreFichero) throws IOException {
-        // Implementación para modificar un fichero
+        // Implementación para borrar un fichero
         Path ruta = Path.of(nombreFichero);
 
-        // Modificación del fichero
-        if (!Files.exists(ruta)) {
-            System.out.println("El fichero no existe.");
-            return;
+        // Borrado del fichero
+
+        // Intenta borrar el archivo y nos avisa si existía o no
+        if (Files.deleteIfExists(ruta)) {
+            System.out.println("El fichero fue borrado con éxito.");
+        } else {
+            System.out.println("El fichero no se pudo borrar porque no existe.");
         }
-        Files.writeString(ruta, nota.toString());
-        System.out.println("Contenido escrito en el fichero.");
 
     }
 
