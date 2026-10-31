@@ -162,4 +162,18 @@ public class App extends Application {
                 });
         return notas;
     }
+
+    public List<Nota> filtrarNotas(List<Nota> notas, String textoBusqueda) throws IllegalArgumentException {
+        // Implementación para filtrar notas por título o contenido
+         if (textoBusqueda == null || textoBusqueda.strip().isEmpty()){
+            throw new IllegalArgumentException("El texto de búsqueda no puede estar vacío o ser nulo.");
+         }
+        List<Nota> notasFiltradas = new java.util.ArrayList<>();
+        for (Nota nota : notas) {
+            if (nota.getTitulo().contains(textoBusqueda) || nota.getContenido().contains(textoBusqueda)) {
+                notasFiltradas.add(nota);
+            }
+        }
+        return notasFiltradas;
+    }
 }
