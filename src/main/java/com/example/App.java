@@ -38,7 +38,25 @@ public class App extends Application {
 
     public static void main(String[] args) {
         // launch();
-       
+        Nota nota = new Nota("Mi primera nota", "Personal", "Este es el contenido de mi primera nota.");
+        String directorio = "notasGuardadas"; // Directorio donde se guardarán los ficheros
+        try {
+            crearFichero(nota, directorio);
+            Nota notaLeida = leerFichero(formaterFecha(nota.getFecha()), directorio);
+            System.out.println("Nota leída: " + notaLeida);
+        } catch (IOException e) {
+            System.out.println("Error al manejar el fichero: " + e.getMessage());
+        }
+        // Cargar todas las notas desde el directorio
+        try {
+            List<Nota> notas = new App().cargarNotasDesdeDirectorio(directorio);
+            System.out.println("Notas cargadas desde el directorio:");
+            for (Nota n : notas) {
+                System.out.println(n);
+            }
+        } catch (IOException e) {
+            System.out.println("Error al cargar notas desde el directorio: " + e.getMessage());
+        }
 
     }
 
@@ -134,7 +152,7 @@ public class App extends Application {
                 .filter(path -> Files.isRegularFile(path) && path.toString().endsWith(".txt"))
                 .forEach(path -> {
                     try {
-                        Nota nota = leerFichero(path.toString());
+                        Nota nota = leerFichero( path.getFileName().toString(),directorio);
                         if (nota != null) {
                             notas.add(nota);
                         }

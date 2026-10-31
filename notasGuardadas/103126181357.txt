@@ -1,0 +1,4 @@
+Hora de creación: 2026-10-31T18:13:57
+Mi primera nota
+Categoría: Personal
+Este es el contenido de mi primera nota.
