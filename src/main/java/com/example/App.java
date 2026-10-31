@@ -38,36 +38,7 @@ public class App extends Application {
 
     public static void main(String[] args) {
         // launch();
-        Nota nota = new Nota("Mi primera nota", "Personal", "Este es el contenido de mi primera nota.");
-        try {
-            crearFichero(nota);
-        } catch (IOException e) {
-            System.out.println("Error al crear el fichero: " + e.getMessage());
-        }
-        String nombre = formaterFecha(nota.getFecha());// A tener en cuenta --> hay que conseguir la fecha antes de
-                                                       // modificar
-        Nota modificadaNota = new Nota("Mi primera nota modificada", "Trabajo",
-                "Este es el contenido modificado de mi primera nota.");
-        modificadaNota.setFecha(nota.getFecha());
-        try {
-            modificarFichero(modificadaNota, nombre);
-        } catch (IOException e) {
-            System.out.println("Error al modificar el fichero: " + e.getMessage());
-        }
-        /*
-         * try {
-         * borrarFichero(modificadaNota, "103026104624.txt");
-         * } catch (IOException e) {
-         * System.out.println("Error al borrar el fichero: " + e.getMessage());
-         * }
-         */
-        try {
-            Nota notaLeida = leerFichero(nombre);
-            System.out.println("Nota leída del fichero:");
-            System.out.println(notaLeida.toString());
-        } catch (IOException e) {
-            System.out.println("Error al leer el fichero: " + e.getMessage());
-        }
+       
 
     }
 
@@ -78,14 +49,18 @@ public class App extends Application {
         return nombreFichero;
     }
 
-    public static void crearFichero(Nota nota) throws IOException {
+    public static void crearFichero(Nota nota, String directorio) throws IOException {
         // Implementación para crear un fichero
+        Path carpetaDestino = Path.of(directorio);
+        if (!Files.exists(carpetaDestino)) {
+            Files.createDirectories(carpetaDestino);
+        }
 
         // creación del nombre del fichero con la fecha y hora actual
         LocalDateTime fecha = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
         nota.setFecha(fecha);
         String nombreFichero = formaterFecha(nota.getFecha());
-        Path ruta = Path.of(nombreFichero);
+        Path ruta = Path.of(directorio, nombreFichero);
 
         // Creación del fichero junto con el contenido de la nota
 
@@ -96,7 +71,7 @@ public class App extends Application {
 
     }
 
-    public static void modificarFichero(Nota nota, String nombreFichero) throws IOException {
+    public static void modificarFichero(Nota nota, String nombreFichero, String directorio) throws IOException {
         // Implementación para modificar un fichero
         Path ruta = Path.of(nombreFichero);
 
@@ -110,7 +85,7 @@ public class App extends Application {
 
     }
 
-    public static void borrarFichero(Nota nota, String nombreFichero) throws IOException {
+    public static void borrarFichero(Nota nota, String nombreFichero, String directorio) throws IOException {
         // Implementación para borrar un fichero
         Path ruta = Path.of(nombreFichero);
 
@@ -125,9 +100,9 @@ public class App extends Application {
 
     }
 
-    public static Nota leerFichero(String nombreFichero) throws IOException {
+    public static Nota leerFichero(String nombreFichero, String directorio) throws IOException {
         // Implementación para leer un fichero
-        Path ruta = Path.of(nombreFichero);
+        Path ruta = Path.of(directorio, nombreFichero);
 
         // Lectura del fichero
         List<String> lineas = Files.readAllLines(ruta); // Lee todas las líneas del fichero
@@ -150,5 +125,23 @@ public class App extends Application {
         } else {
             throw new IOException("El fichero no tiene el formato esperado.");
         }
+    }
+
+    public List<Nota> cargarNotasDesdeDirectorio(String directorio) throws IOException {
+        // Implementación para cargar todas las notas desde un directorio
+        List<Nota> notas = new java.util.ArrayList<>();
+        Files.list(Path.of(directorio))
+                .filter(path -> Files.isRegularFile(path) && path.toString().endsWith(".txt"))
+                .forEach(path -> {
+                    try {
+                        Nota nota = leerFichero(path.toString());
+                        if (nota != null) {
+                            notas.add(nota);
+                        }
+                    } catch (IOException e) {
+                        System.out.println("Error al leer el fichero: " + e.getMessage());
+                    }
+                });
+        return notas;
     }
 }
