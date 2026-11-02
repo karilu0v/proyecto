@@ -38,25 +38,6 @@ public class App extends Application {
 
     public static void main(String[] args) {
         // launch();
-        Nota nota = new Nota("Mi primera nota", "Personal", "Este es el contenido de mi primera nota.");
-        String directorio = "notasGuardadas"; // Directorio donde se guardarán los ficheros
-        try {
-            crearFichero(nota, directorio);
-            Nota notaLeida = leerFichero(formaterFecha(nota.getFecha()), directorio);
-            System.out.println("Nota leída: " + notaLeida);
-        } catch (IOException e) {
-            System.out.println("Error al manejar el fichero: " + e.getMessage());
-        }
-        // Cargar todas las notas desde el directorio
-        try {
-            List<Nota> notas = new App().cargarNotasDesdeDirectorio(directorio);
-            System.out.println("Notas cargadas desde el directorio:");
-            for (Nota n : notas) {
-                System.out.println(n);
-            }
-        } catch (IOException e) {
-            System.out.println("Error al cargar notas desde el directorio: " + e.getMessage());
-        }
 
     }
 
@@ -95,8 +76,7 @@ public class App extends Application {
 
         // Modificación del fichero
         if (!Files.exists(ruta)) {
-            System.out.println("El fichero no existe.");
-            return;
+            throw new IOException("El fichero no existe.");
         }
         Files.writeString(ruta, nota.toString());
         System.out.println("Contenido escrito en el fichero.");
@@ -113,7 +93,7 @@ public class App extends Application {
         if (Files.deleteIfExists(ruta)) {
             System.out.println("El fichero fue borrado con éxito.");
         } else {
-            System.out.println("El fichero no se pudo borrar porque no existe.");
+           throw new IOException("El fichero no existe y no se pudo borrar.");
         }
 
     }
