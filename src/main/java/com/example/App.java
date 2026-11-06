@@ -13,23 +13,38 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 public class App extends Application {
 
     @Override
     public void start(Stage ventana) throws Exception {
-        ventana.setTitle("Plantilla de app para JavaFX");
+        ventana.setTitle("Proyecto 1");
 
-        VBox columna = new VBox();
+        VBox pantallaPrincipal = new VBox();
 
-        Button boton = new Button("o.o");
-        Label etiqueta = new Label("My way home is through you");
-        Button boton2 = new Button("Hellooooooo");
+        BorderPane panelSuperior = new BorderPane();
+        HBox panelBotones = new HBox();
 
-        columna.getChildren().addAll(boton, etiqueta, boton2);
+        panelBotones.setSpacing(10);
+        
 
-        Scene escena = new Scene(columna, 600, 400);
+        Button btnNueva = new Button("Nueva Nota");
+        Button btnEditar = new Button("Editar Nota");
+        Button btnBorrar = new Button("Borrar Nota");
+        TextField txtBuscar = new TextField();
+        Button btnBuscar = new Button("Buscar Nota");
+        panelBotones.getChildren().addAll(btnNueva, btnEditar, btnBorrar, txtBuscar, btnBuscar);
+        panelSuperior.setTop(panelBotones);
+
+       
+
+        pantallaPrincipal.getChildren().addAll(panelSuperior);
+
+        Scene escena = new Scene(pantallaPrincipal, 600, 400);
 
         ventana.setScene(escena);
 
@@ -37,7 +52,19 @@ public class App extends Application {
     }
 
     public static void main(String[] args) {
-        // launch();
+        launch();
+       /*try{
+            List<Nota> notas = cargarNotasDesdeDirectorio("notasGuardadas");
+            System.out.println("Notas cargadas desde el directorio:");
+            for (Nota nota : notas) {
+                System.out.println(nota);
+                System.out.println();
+            }
+        }
+        catch (IOException e){
+            System.out.println("Error al cargar las notas: " + e.getMessage());
+        }*/
+        
 
     }
 
@@ -72,7 +99,7 @@ public class App extends Application {
 
     public static void modificarFichero(Nota nota, String nombreFichero, String directorio) throws IOException {
         // Implementación para modificar un fichero
-        Path ruta = Path.of(nombreFichero);
+        Path ruta = Path.of(directorio, nombreFichero);
 
         // Modificación del fichero
         if (!Files.exists(ruta)) {
@@ -85,7 +112,7 @@ public class App extends Application {
 
     public static void borrarFichero(Nota nota, String nombreFichero, String directorio) throws IOException {
         // Implementación para borrar un fichero
-        Path ruta = Path.of(nombreFichero);
+        Path ruta = Path.of(directorio, nombreFichero);
 
         // Borrado del fichero
 
@@ -125,7 +152,7 @@ public class App extends Application {
         }
     }
 
-    public List<Nota> cargarNotasDesdeDirectorio(String directorio) throws IOException {
+    public static List<Nota> cargarNotasDesdeDirectorio(String directorio) throws IOException {
         // Implementación para cargar todas las notas desde un directorio
         List<Nota> notas = new java.util.ArrayList<>();
         Files.list(Path.of(directorio))
