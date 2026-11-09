@@ -46,9 +46,9 @@ public class Nota {
 
     @Override 
     public String toString() {
-        return "Hora de creación: " + fecha + "\n" 
+        return "título: " 
                + titulo + "\n" +
-               "Categoría: " + categoria + "\n" +
+               "Categoría: " + categoria + "\n" + "---\n" +
                contenido;
     }
 }

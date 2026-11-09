@@ -52,8 +52,8 @@ public class App extends Application {
     }
 
     public static void main(String[] args) {
-        launch();
-       /*try{
+        //launch();
+       try{
             List<Nota> notas = cargarNotasDesdeDirectorio("notasGuardadas");
             System.out.println("Notas cargadas desde el directorio:");
             for (Nota nota : notas) {
@@ -63,7 +63,7 @@ public class App extends Application {
         }
         catch (IOException e){
             System.out.println("Error al cargar las notas: " + e.getMessage());
-        }*/
+        }
         
 
     }
@@ -132,12 +132,8 @@ public class App extends Application {
         // Lectura del fichero
         List<String> lineas = Files.readAllLines(ruta); // Lee todas las líneas del fichero
         if (lineas.size() >= 3) {
-            String fechaStr = lineas.get(0).replace("Hora de creación: ", "").trim();
-            DateTimeFormatter formateador = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-            LocalDateTime fecha = LocalDateTime.parse(fechaStr, formateador);
-            System.out.println("Fecha leída del fichero: " + fecha);
-            String titulo = lineas.get(1);
-            String categoria = lineas.get(2).replace("Categoría: ", "");
+            String titulo = lineas.get(0).replace("título: ", "");
+            String categoria = lineas.get(1).replace("Categoría: ", "");
             StringBuilder contenidoBuilder = new StringBuilder();
             for (int i = 3; i < lineas.size(); i++) {
                 contenidoBuilder.append(lineas.get(i)).append("\n");
@@ -145,7 +141,6 @@ public class App extends Application {
             String contenido = contenidoBuilder.toString().trim();
 
             Nota nota = new Nota(titulo, categoria, contenido);
-            nota.setFecha(fecha);
             return nota;
         } else {
             throw new IOException("El fichero no tiene el formato esperado.");
