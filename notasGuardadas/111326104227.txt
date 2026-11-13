@@ -1,0 +1,4 @@
+título: Nota 2
+Categoría: Categoría 2
+---
+Contenido de la nota 2

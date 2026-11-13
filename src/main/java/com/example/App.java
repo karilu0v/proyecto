@@ -7,16 +7,23 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.ArrayList;
 
 import javafx.application.Application;
+import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import javafx.scene.layout.Region;
+import javafx.event.EventHandler;
+import javafx.scene.control.TextArea;
+import javafx.scene.layout.Priority;
 
 public class App extends Application {
 
@@ -26,25 +33,78 @@ public class App extends Application {
 
         VBox pantallaPrincipal = new VBox();
 
+        VBox.setVgrow(pantallaPrincipal, Priority.ALWAYS);
+
         BorderPane panelSuperior = new BorderPane();
         HBox panelBotones = new HBox();
 
         panelBotones.setSpacing(10);
-        
 
+        // Panel superior
         Button btnNueva = new Button("Nueva Nota");
         Button btnEditar = new Button("Editar Nota");
         Button btnBorrar = new Button("Borrar Nota");
         TextField txtBuscar = new TextField();
         Button btnBuscar = new Button("Buscar Nota");
-        panelBotones.getChildren().addAll(btnNueva, btnEditar, btnBorrar, txtBuscar, btnBuscar);
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, javafx.scene.layout.Priority.ALWAYS);
+        panelBotones.getChildren().addAll(btnNueva, btnEditar, btnBorrar, spacer, txtBuscar, btnBuscar);
+        panelSuperior.setPadding(new javafx.geometry.Insets(20));
         panelSuperior.setTop(panelBotones);
 
-       
+        // Panel notas
+        HBox panelNotas = new HBox();
+        VBox.setVgrow(panelNotas, Priority.ALWAYS);
 
-        pantallaPrincipal.getChildren().addAll(panelSuperior);
+        // Panel elección de notas
+        VBox panelEleccionNotas = new VBox(10);
 
-        Scene escena = new Scene(pantallaPrincipal, 600, 400);
+        panelEleccionNotas.setPadding(new javafx.geometry.Insets(10));
+        Label lblNotas = new Label("Notas");
+        VBox panelListaNotas = new VBox();
+        panelEleccionNotas.getChildren().addAll(lblNotas);
+
+        // Panel visualización de notas
+        VBox panelVisualizacionNotas = new VBox();
+        panelVisualizacionNotas.setStyle("-fx-background-color: #58A1CC; -fx-padding:10;");
+
+        TextArea txtVisualizacionNota = new TextArea();
+        txtVisualizacionNota.setEditable(false);
+        txtVisualizacionNota.setWrapText(true);
+
+        HBox.setHgrow(panelVisualizacionNotas, Priority.ALWAYS);
+        VBox.setVgrow(txtVisualizacionNota, Priority.ALWAYS);
+
+        VBox panelBotonesNotas = new VBox(10);
+        ScrollPane scrollNotas = new ScrollPane(panelBotonesNotas);
+        scrollNotas.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scrollNotas.setMinWidth(150);
+        VBox.setVgrow(scrollNotas, Priority.ALWAYS);
+
+        scrollNotas.setFitToWidth(true);
+        ArrayList<Nota> lisTaNotas = cargarNotasDesdeDirectorio("notasGuardadas");
+        ArrayList<Button> botonesNotas = new ArrayList<>();
+        for (Nota l : lisTaNotas) {
+            Button btnNota = new Button(l.getTitulo());
+            botonesNotas.add(btnNota);
+            panelBotonesNotas.getChildren().add(btnNota);
+            btnNota.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    txtVisualizacionNota.setText(l.toString());
+                }
+            });
+        }
+
+        panelVisualizacionNotas.getChildren().add(txtVisualizacionNota);
+        panelEleccionNotas.getChildren().addAll(panelListaNotas, scrollNotas);
+
+        // Construcción del panel de notas
+        panelNotas.getChildren().addAll(panelEleccionNotas, panelVisualizacionNotas);
+
+        pantallaPrincipal.getChildren().addAll(panelSuperior, panelNotas);
+
+        Scene escena = new Scene(pantallaPrincipal, 800, 600);
 
         ventana.setScene(escena);
 
@@ -52,20 +112,7 @@ public class App extends Application {
     }
 
     public static void main(String[] args) {
-        //launch();
-       try{
-            List<Nota> notas = cargarNotasDesdeDirectorio("notasGuardadas");
-            System.out.println("Notas cargadas desde el directorio:");
-            for (Nota nota : notas) {
-                System.out.println(nota);
-                System.out.println();
-            }
-        }
-        catch (IOException e){
-            System.out.println("Error al cargar las notas: " + e.getMessage());
-        }
-        
-
+        launch();
     }
 
     public static String formaterFecha(LocalDateTime fecha) {
@@ -120,7 +167,7 @@ public class App extends Application {
         if (Files.deleteIfExists(ruta)) {
             System.out.println("El fichero fue borrado con éxito.");
         } else {
-           throw new IOException("El fichero no existe y no se pudo borrar.");
+            throw new IOException("El fichero no existe y no se pudo borrar.");
         }
 
     }
@@ -147,14 +194,14 @@ public class App extends Application {
         }
     }
 
-    public static List<Nota> cargarNotasDesdeDirectorio(String directorio) throws IOException {
+    public static ArrayList<Nota> cargarNotasDesdeDirectorio(String directorio) throws IOException {
         // Implementación para cargar todas las notas desde un directorio
-        List<Nota> notas = new java.util.ArrayList<>();
+        ArrayList<Nota> notas = new ArrayList<>();
         Files.list(Path.of(directorio))
                 .filter(path -> Files.isRegularFile(path) && path.toString().endsWith(".txt"))
                 .forEach(path -> {
                     try {
-                        Nota nota = leerFichero( path.getFileName().toString(),directorio);
+                        Nota nota = leerFichero(path.getFileName().toString(), directorio);
                         if (nota != null) {
                             notas.add(nota);
                         }
@@ -167,9 +214,9 @@ public class App extends Application {
 
     public List<Nota> filtrarNotas(List<Nota> notas, String textoBusqueda) throws IllegalArgumentException {
         // Implementación para filtrar notas por título o contenido
-         if (textoBusqueda == null || textoBusqueda.strip().isEmpty()){
+        if (textoBusqueda == null || textoBusqueda.strip().isEmpty()) {
             throw new IllegalArgumentException("El texto de búsqueda no puede estar vacío o ser nulo.");
-         }
+        }
         List<Nota> notasFiltradas = new java.util.ArrayList<>();
         for (Nota nota : notas) {
             if (nota.getTitulo().contains(textoBusqueda) || nota.getContenido().contains(textoBusqueda)) {
