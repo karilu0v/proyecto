@@ -76,6 +76,7 @@ public class App extends Application {
         VBox.setVgrow(txtVisualizacionNota, Priority.ALWAYS);
 
         VBox panelBotonesNotas = new VBox(10);
+        panelBotonesNotas.setPadding(new javafx.geometry.Insets(10));
         ScrollPane scrollNotas = new ScrollPane(panelBotonesNotas);
         scrollNotas.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scrollNotas.setMinWidth(150);
