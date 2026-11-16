@@ -1,0 +1,4 @@
+título: Nota 3
+Categoría: Contenido 3
+---
+Nota creada por la interfaz

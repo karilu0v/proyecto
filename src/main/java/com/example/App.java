@@ -1,5 +1,6 @@
 package com.example;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -11,6 +12,7 @@ import java.util.ArrayList;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -22,94 +24,170 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import javafx.scene.layout.Region;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.Priority;
 
 public class App extends Application {
 
+    // Atributos de la clase (accesibles desde todos los métodos)
+    private Stage ventana;
+    private Scene escenaPrincipal;
+    private VBox panelBotonesNotas;
+    private TextArea txtVisualizacionNota;
+    private Nota notaSeleccionada = null;
+    private final String CARPETA_NOTAS = "notasGuardadas";
+
     @Override
-    public void start(Stage ventana) throws Exception {
-        ventana.setTitle("Proyecto 1");
+    public void start(Stage ventana) {
+        this.ventana = ventana;
+        this.ventana.setTitle("Proyecto 1");
 
+        // Aseguramos que la carpeta exista desde el principio
+        new File(CARPETA_NOTAS).mkdirs();
+
+        // 1. Construimos la interfaz principal
         VBox pantallaPrincipal = new VBox();
+        pantallaPrincipal.getChildren().addAll(crearPanelSuperior(), crearPanelCentral());
 
-        VBox.setVgrow(pantallaPrincipal, Priority.ALWAYS);
+        escenaPrincipal = new Scene(pantallaPrincipal, 800, 600);
+        ventana.setScene(escenaPrincipal);
 
-        BorderPane panelSuperior = new BorderPane();
-        HBox panelBotones = new HBox();
+        // 2. Cargamos los botones de las notas guardadas
+        actualizarListaNotas();
 
-        panelBotones.setSpacing(10);
+        ventana.show();
+    }
 
-        // Panel superior
+    // --- MÉTODOS DE CONSTRUCCIÓN DE INTERFAZ ---
+
+    private BorderPane crearPanelSuperior() {
         Button btnNueva = new Button("Nueva Nota");
         Button btnEditar = new Button("Editar Nota");
         Button btnBorrar = new Button("Borrar Nota");
         TextField txtBuscar = new TextField();
         Button btnBuscar = new Button("Buscar Nota");
+
+        // Asignamos acciones limpias con lambdas
+        btnNueva.setOnAction(e -> abrirFormularioNota(null)); // null = nota nueva
+        btnEditar.setOnAction(e -> {
+            if (notaSeleccionada != null) {
+                abrirFormularioNota(notaSeleccionada); // pasamos la nota a editar
+            }
+        });
+
         Region spacer = new Region();
-        HBox.setHgrow(spacer, javafx.scene.layout.Priority.ALWAYS);
-        panelBotones.getChildren().addAll(btnNueva, btnEditar, btnBorrar, spacer, txtBuscar, btnBuscar);
-        panelSuperior.setPadding(new javafx.geometry.Insets(20));
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        HBox panelBotones = new HBox(10, btnNueva, btnEditar, btnBorrar, spacer, txtBuscar, btnBuscar);
+        BorderPane panelSuperior = new BorderPane();
+        panelSuperior.setPadding(new Insets(20));
         panelSuperior.setTop(panelBotones);
+        return panelSuperior;
+    }
 
-        // Panel notas
-        HBox panelNotas = new HBox();
-        VBox.setVgrow(panelNotas, Priority.ALWAYS);
-
-        // Panel elección de notas
-        VBox panelEleccionNotas = new VBox(10);
-
-        panelEleccionNotas.setPadding(new javafx.geometry.Insets(10));
+    private HBox crearPanelCentral() {
+        // Panel izquierdo (Lista de notas)
         Label lblNotas = new Label("Notas");
-        VBox panelListaNotas = new VBox();
-        panelEleccionNotas.getChildren().addAll(lblNotas);
+        panelBotonesNotas = new VBox(10);
+        panelBotonesNotas.setPadding(new Insets(10));
 
-        // Panel visualización de notas
-        VBox panelVisualizacionNotas = new VBox();
-        panelVisualizacionNotas.setStyle("-fx-background-color: #58A1CC; -fx-padding:10;");
-
-        TextArea txtVisualizacionNota = new TextArea();
-        txtVisualizacionNota.setEditable(false);
-        txtVisualizacionNota.setWrapText(true);
-
-        HBox.setHgrow(panelVisualizacionNotas, Priority.ALWAYS);
-        VBox.setVgrow(txtVisualizacionNota, Priority.ALWAYS);
-
-        VBox panelBotonesNotas = new VBox(10);
-        panelBotonesNotas.setPadding(new javafx.geometry.Insets(10));
         ScrollPane scrollNotas = new ScrollPane(panelBotonesNotas);
-        scrollNotas.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scrollNotas.setFitToWidth(true);
         scrollNotas.setMinWidth(150);
         VBox.setVgrow(scrollNotas, Priority.ALWAYS);
 
-        scrollNotas.setFitToWidth(true);
-        ArrayList<Nota> lisTaNotas = cargarNotasDesdeDirectorio("notasGuardadas");
-        ArrayList<Button> botonesNotas = new ArrayList<>();
-        for (Nota l : lisTaNotas) {
-            Button btnNota = new Button(l.getTitulo());
-            botonesNotas.add(btnNota);
-            panelBotonesNotas.getChildren().add(btnNota);
-            btnNota.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent event) {
-                    txtVisualizacionNota.setText(l.toString());
+        VBox panelEleccionNotas = new VBox(10, lblNotas, scrollNotas);
+        panelEleccionNotas.setPadding(new Insets(10));
+
+        // Panel derecho (Visualización)
+        txtVisualizacionNota = new TextArea();
+        txtVisualizacionNota.setEditable(false);
+        txtVisualizacionNota.setWrapText(true);
+        VBox.setVgrow(txtVisualizacionNota, Priority.ALWAYS);
+
+        VBox panelVisualizacionNotas = new VBox(txtVisualizacionNota);
+        panelVisualizacionNotas.setStyle("-fx-background-color: #58A1CC; -fx-padding:10;");
+        HBox.setHgrow(panelVisualizacionNotas, Priority.ALWAYS);
+
+        HBox panelNotas = new HBox(panelEleccionNotas, panelVisualizacionNotas);
+        VBox.setVgrow(panelNotas, Priority.ALWAYS);
+        return panelNotas;
+    }
+
+    // --- FORMULARIO UNIFICADO (SIRVE PARA CREAR Y EDITAR) ---
+
+    private void abrirFormularioNota(Nota notaAEditar) {
+        boolean esEdicion = (notaAEditar != null);
+
+        Label lblTitulo = new Label("Título:");
+        TextField txtTitulo = new TextField(esEdicion ? notaAEditar.getTitulo() : "");
+
+        Label lblCategoria = new Label("Categoría:");
+        TextField txtCategoria = new TextField(esEdicion ? notaAEditar.getCategoria() : "");
+
+        Label lblContenido = new Label("Contenido:");
+        TextArea txtContenido = new TextArea(esEdicion ? notaAEditar.getContenido() : "");
+        VBox.setVgrow(txtContenido, Priority.ALWAYS);
+
+        Button btnGuardar = new Button("Guardar");
+        Button btnCancelar = new Button("Cancelar");
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+        HBox botones = new HBox(10, btnGuardar, spacer, btnCancelar);
+
+        VBox panelFormulario = new VBox(10, lblTitulo, txtTitulo, lblCategoria, txtCategoria, lblContenido,
+                txtContenido, botones);
+        panelFormulario.setPadding(new Insets(15));
+
+        // Acción Guardar
+        btnGuardar.setOnAction(e -> {
+            Nota notaResultante = new Nota(txtTitulo.getText(), txtCategoria.getText(), txtContenido.getText());
+            try {
+                if (esEdicion) {
+                    modificarFichero(notaResultante, notaAEditar.getTitulo(), CARPETA_NOTAS);
+                    notaSeleccionada = notaResultante;
+                    txtVisualizacionNota.setText(notaResultante.toString());
+                } else {
+                    crearFichero(notaResultante, CARPETA_NOTAS);
                 }
-            });
+                actualizarListaNotas(); // Refrescamos los botones de la izquierda
+            } catch (IOException ex) {
+                System.out.println("Error de fichero: " + ex.getMessage());
+                ex.printStackTrace();
+            }
+            ventana.setScene(escenaPrincipal);
+        });
+
+        // Acción Cancelar
+        btnCancelar.setOnAction(e -> ventana.setScene(escenaPrincipal));
+
+        ventana.setScene(new Scene(panelFormulario, 400, 400));
+    }
+
+    // --- MÉTODO PARA RECARGAR LA LISTA LATERAL ---
+
+    private void actualizarListaNotas() {
+        panelBotonesNotas.getChildren().clear(); // Limpiamos botones viejos
+         ArrayList<Nota> listaNotas = new ArrayList<>();
+        try {
+            listaNotas = cargarNotasDesdeDirectorio(CARPETA_NOTAS);
+        } catch (IOException e) {
+            System.out.println("Error al cargar notas: " + e.getMessage());
+            return;
         }
 
-        panelVisualizacionNotas.getChildren().add(txtVisualizacionNota);
-        panelEleccionNotas.getChildren().addAll(panelListaNotas, scrollNotas);
+        for (Nota n : listaNotas) {
+            Button btnNota = new Button(n.getTitulo());
+            btnNota.setMaxWidth(Double.MAX_VALUE); // Para que todos los botones tengan el mismo ancho
 
-        // Construcción del panel de notas
-        panelNotas.getChildren().addAll(panelEleccionNotas, panelVisualizacionNotas);
+            btnNota.setOnAction(e -> {
+                notaSeleccionada = n; // Ya tenemos el objeto Nota en memoria, no hace falta volver a leer el disco
+                txtVisualizacionNota.setText(n.toString());
+            });
 
-        pantallaPrincipal.getChildren().addAll(panelSuperior, panelNotas);
-
-        Scene escena = new Scene(pantallaPrincipal, 800, 600);
-
-        ventana.setScene(escena);
-
-        ventana.show();
+            panelBotonesNotas.getChildren().add(btnNota);
+        }
     }
 
     public static void main(String[] args) {
