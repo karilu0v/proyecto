@@ -1,4 +1,4 @@
 título: Nota 1
 Categoría: Categoría 1
 ---
-Contenido de la nota 1 editada si
+Contenido de la nota 1 editada

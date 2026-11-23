@@ -22,13 +22,13 @@ import javafx.stage.Stage;
 
 public class AppNotas extends Application {
 
-    private final GestorNotas gestor = new GestorNotas("notasGuardadas");
+    private GestorNotas gestor = new GestorNotas("notasGuardadas");
     private Stage ventana;
     private Scene escenaPrincipal;
     private VBox panelBotonesNotas;
     private TextArea txtVisualizacionNota;
     private Nota notaSeleccionada = null;
-    private final String rutaCss = getClass().getResource("estilos.css").toExternalForm();
+    private String rutaCss = getClass().getResource("estilos.css").toExternalForm();
 
     @Override
     public void start(Stage primaryStage) {
@@ -108,25 +108,25 @@ public class AppNotas extends Application {
         panelBotones.setId("panelSuperior");
         panelEleccionNotas.setId("panelIzquierdo");
         panelVisualizacionNotas.setId("panelDerecho");
-        panelVisualizacionNotas.setStyle(""); // Borra el estilo anterior (#58A1CC) para que mande el CSS
+        panelVisualizacionNotas.setStyle(""); 
 
-        // 2. Asignar clases e IDs a los controles superiores
+        // Asignar clases e IDs a los controles superiores
         btnNueva.getStyleClass().add("boton-superior");
         btnEditar.getStyleClass().add("boton-superior");
         btnBorrar.getStyleClass().add("boton-superior");
         btnBuscar.getStyleClass().add("boton-superior");
         txtBuscar.setId("campoBuscar");
 
-        // 3. Título "Notas" centrado arriba en el panel izquierdo
+        //Título "Notas" centrado arriba en el panel izquierdo
         Label lblNotas = new Label("Notas");
         lblNotas.setId("tituloNotas");
         lblNotas.setMaxWidth(Double.MAX_VALUE);
         lblNotas.setAlignment(javafx.geometry.Pos.CENTER);
 
-        // 4. TextArea derecho
+        //TextArea derecho
         txtVisualizacionNota.setId("visorNota");
 
-        // 5. Vincular el archivo CSS a la escena principal
+        //Vincular el archivo CSS a la escena principal
         escenaPrincipal.getStylesheets().add(getClass().getResource("estilos.css").toExternalForm());
 
     }
@@ -192,7 +192,7 @@ public class AppNotas extends Application {
         Scene escenaFormulario = new Scene(panelFormulario, 450, 400);
         escenaFormulario.getStylesheets().add(getClass().getResource("estilos.css").toExternalForm());
         ventana.setScene(escenaFormulario);
-        //ventana.setScene(new Scene(panelFormulario, 450, 400));
+        // ventana.setScene(new Scene(panelFormulario, 450, 400));
     }
 
     private void eliminarNotaSeleccionada() {
@@ -207,7 +207,7 @@ public class AppNotas extends Application {
         confirmacion.setContentText("Esta acción no se puede deshacer.");
         confirmacion.getDialogPane().getStylesheets().add(rutaCss); // Vincula el CSS al diálogo de confirmación
 
-        Optional<ButtonType> resultado = confirmacion.showAndWait();
+        Optional<ButtonType> resultado = confirmacion.showAndWait(); //contenedor que guarda el resultado de la acción del usuario (OK o Cancelar)
         if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
             try {
                 gestor.borrarFichero(notaSeleccionada.getNombreFichero());
@@ -233,7 +233,14 @@ public class AppNotas extends Application {
     private void actualizarListaNotas(List<Nota> notasAMostrar) {
         panelBotonesNotas.getChildren().clear();
         try {
-            List<Nota> lista = (notasAMostrar != null) ? notasAMostrar : gestor.cargarNotas();
+            List<Nota> lista;
+
+            if (notasAMostrar != null) {
+                lista = notasAMostrar;
+            } else {
+                lista = gestor.cargarNotas();
+            }
+
             for (Nota n : lista) {
                 Button btnNota = new Button(n.getTitulo() + "\n" + n.getCategoria());
                 btnNota.setMaxWidth(Double.MAX_VALUE);
@@ -251,12 +258,12 @@ public class AppNotas extends Application {
 
     private void mostrarAlerta(String titulo, String mensaje) {
         Alert alerta = new Alert(Alert.AlertType.WARNING);
-        alerta.getDialogPane().getStylesheets().add(rutaCss); 
+        alerta.getDialogPane().getStylesheets().add(rutaCss);
         alerta.setTitle(titulo);
         alerta.setHeaderText(null);
         alerta.setContentText(mensaje);
         alerta.showAndWait();
-        
+
     }
 
     public static void main(String[] args) {

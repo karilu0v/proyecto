@@ -1,0 +1,4 @@
+título: Nota 4
+Categoría: Categoria 4 
+---
+Contenido de la nota 4
