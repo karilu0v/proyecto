@@ -59,6 +59,7 @@ public class AppNotas extends Application {
 
         panelBotonesNotas = new VBox(5);
         ScrollPane scrollNotas = new ScrollPane(panelBotonesNotas);
+        scrollNotas.setId("scrollNotas");
         scrollNotas.setFitToWidth(true);
         VBox.setVgrow(scrollNotas, Priority.ALWAYS);
         Label lblNotasTitulo = new Label("Notas");
@@ -69,7 +70,6 @@ public class AppNotas extends Application {
         panelEleccionNotas.getChildren().addAll(lblNotasTitulo, scrollNotas);
 
         VBox panelVisualizacionNotas = new VBox();
-        panelVisualizacionNotas.setStyle("-fx-background-color: #58A1CC; -fx-padding: 10;");
         HBox.setHgrow(panelVisualizacionNotas, Priority.ALWAYS);
 
         txtVisualizacionNota = new TextArea();
@@ -104,34 +104,24 @@ public class AppNotas extends Application {
 
         ventana.setScene(escenaPrincipal);
         ventana.show();
-        // Asignar IDs a los paneles
+
+        // Aplicar estilos CSS
         panelBotones.setId("panelSuperior");
         panelEleccionNotas.setId("panelIzquierdo");
         panelVisualizacionNotas.setId("panelDerecho");
         panelVisualizacionNotas.setStyle(""); 
-
-        // Asignar clases e IDs a los controles superiores
         btnNueva.getStyleClass().add("boton-superior");
         btnEditar.getStyleClass().add("boton-superior");
         btnBorrar.getStyleClass().add("boton-superior");
         btnBuscar.getStyleClass().add("boton-superior");
         txtBuscar.setId("campoBuscar");
-
-        //Título "Notas" centrado arriba en el panel izquierdo
-        Label lblNotas = new Label("Notas");
-        lblNotas.setId("tituloNotas");
-        lblNotas.setMaxWidth(Double.MAX_VALUE);
-        lblNotas.setAlignment(javafx.geometry.Pos.CENTER);
-
-        //TextArea derecho
         txtVisualizacionNota.setId("visorNota");
-
-        //Vincular el archivo CSS a la escena principal
+        //Vincular el CSS a la escena principal
         escenaPrincipal.getStylesheets().add(getClass().getResource("estilos.css").toExternalForm());
 
     }
 
-    private void abrirFormularioNota(Nota notaAEditar) {
+    private void abrirFormularioNota(Nota notaAEditar) { //Ventana para crear o editar una nota. Si notaAEditar es null, se crea una nueva nota; de lo contrario, se edita la nota existente.
         boolean esEdicion = (notaAEditar != null);
 
         Label lblTitulo = new Label("Título:");
@@ -168,12 +158,12 @@ public class AppNotas extends Application {
         panelFormulario.setId("panelFormulario");
         panelFormulario.setPadding(new Insets(20));
 
-        btnGuardar.setOnAction(e -> {
+        btnGuardar.setOnAction(e -> { 
             Nota notaResultante = new Nota(txtTitulo.getText(), txtCategoria.getText(), txtContenido.getText());
             try {
                 if (esEdicion) {
                     String nombreFichero = notaAEditar.getNombreFichero();
-                    gestor.modificarFichero(notaResultante, nombreFichero);
+                    gestor.modificarFichero(notaResultante, nombreFichero); // Modifica el fichero existente
                     notaResultante.setFecha(notaAEditar.getFecha());
                     notaResultante.setNombreFichero(nombreFichero);
                     notaSeleccionada = notaResultante;
@@ -188,14 +178,13 @@ public class AppNotas extends Application {
             }
         });
 
-        btnCancelar.setOnAction(e -> ventana.setScene(escenaPrincipal));
+        btnCancelar.setOnAction(e -> ventana.setScene(escenaPrincipal)); // Vuelve a la escena principal sin guardar cambios
         Scene escenaFormulario = new Scene(panelFormulario, 450, 400);
         escenaFormulario.getStylesheets().add(getClass().getResource("estilos.css").toExternalForm());
         ventana.setScene(escenaFormulario);
-        // ventana.setScene(new Scene(panelFormulario, 450, 400));
     }
 
-    private void eliminarNotaSeleccionada() {
+    private void eliminarNotaSeleccionada() { // Método para eliminar la nota seleccionada
         if (notaSeleccionada == null) {
             mostrarAlerta("Aviso", "Selecciona primero la nota que quieres borrar.");
             return;
@@ -230,7 +219,7 @@ public class AppNotas extends Application {
         }
     }
 
-    private void actualizarListaNotas(List<Nota> notasAMostrar) {
+    private void actualizarListaNotas(List<Nota> notasAMostrar) { // Actualiza la lista de notas mostradas en el panel izquierdo. Si notasAMostrar es null, se cargan todas las notas.
         panelBotonesNotas.getChildren().clear();
         try {
             List<Nota> lista;
@@ -256,7 +245,7 @@ public class AppNotas extends Application {
         }
     }
 
-    private void mostrarAlerta(String titulo, String mensaje) {
+    private void mostrarAlerta(String titulo, String mensaje) { // Alertas a mostrar cuando ocurre un error o se necesita informar al usuario de algo importante
         Alert alerta = new Alert(Alert.AlertType.WARNING);
         alerta.getDialogPane().getStylesheets().add(rutaCss);
         alerta.setTitle(titulo);

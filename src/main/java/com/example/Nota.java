@@ -1,11 +1,14 @@
 package com.example;
 
 public class Nota {
+    // Atributos de la clase Nota
     java.time.LocalDateTime fecha;
     String titulo;
     String categoria;
     String contenido;
-    String nombreFichero;
+    String nombreFichero; // Atributo para almacenar el nombre del fichero asociado a la nota el cual se obtiene a partir de la fecha de creación de la nota en el formato MMddyyHHmmss.txt
+
+    // Constructor que recibe el título, categoría y contenido de la nota
 
     public Nota( String titulo, String categoria, String contenido) {
         this.titulo = titulo;
@@ -13,6 +16,7 @@ public class Nota {
         this.contenido = contenido;
     }
     
+    // Getters y setters para los atributos de la clase Nota
     public String getNombreFichero() {
         return nombreFichero;
     }
@@ -51,6 +55,7 @@ public class Nota {
         this.contenido = contenido;
     }
 
+    // Método toString que devuelve una representación en cadena de la nota, incluyendo el título, categoría y contenido
     @Override 
     public String toString() {
         return "título: " 
