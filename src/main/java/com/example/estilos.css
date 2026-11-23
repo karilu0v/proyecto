@@ -1,0 +1,136 @@
+/* --- PANELES PRINCIPALES --- */
+#panelSuperior {
+    -fx-background-color: #4D4D6B; /* Morado grisáceo de la barra superior */
+}
+
+#panelIzquierdo {
+    -fx-background-color: #423D57; /* Morado oscuro de la columna izquierda */
+}
+
+#panelDerecho {
+    -fx-background-color: #363954; /* Azul/morado oscuro del visor derecho */
+}
+
+/* --- BOTONES DE LA BARRA SUPERIOR --- */
+.boton-superior {
+    -fx-background-color: #3B3B52;
+    -fx-text-fill: white;
+    -fx-background-radius: 12;
+    -fx-font-size: 14px;
+    -fx-padding: 8 18 8 18;
+    -fx-cursor: hand;
+}
+
+.boton-superior:hover {
+    -fx-background-color: #555575;
+}
+
+/* --- CAMPO DE BÚSQUEDA --- */
+#campoBuscar {
+    -fx-background-color: #8A93C7; /* Lavanda claro */
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: #E0E4F7;
+    -fx-background-radius: 12;
+    -fx-font-size: 14px;
+    -fx-padding: 8 12 8 12;
+}
+
+/* --- ETIQUETA "NOTAS" --- */
+#tituloNotas {
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-padding: 5 0 10 0;
+}
+
+/* --- SCROLLPANE TRANSPARENTE (Para que no salga el borde gris) --- */
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+}
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+/* --- TARJETAS / BOTONES DE CADA NOTA --- */
+.tarjeta-nota {
+    -fx-background-color: #8A93C7; /* Lavanda claro */
+    -fx-text-fill: white;
+    -fx-background-radius: 18;
+    -fx-font-size: 14px;
+    -fx-alignment: TOP_LEFT;       /* Texto arriba a la izquierda como en la imagen */
+    -fx-padding: 15 20 15 20;
+    -fx-pref-height: 85px;         /* Altura de tarjeta */
+    -fx-cursor: hand;
+}
+
+.tarjeta-nota:hover {
+    -fx-background-color: #9CA5D9;
+}
+
+/* --- ÁREA DE VISUALIZACIÓN DE LA NOTA (DERECHA) --- */
+#visorNota {
+    -fx-control-inner-background: #363954; /* Fondo interno del TextArea */
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+/* --- FORMULARIO CREAR / EDITAR NOTA --- */
+#panelFormulario {
+    -fx-background-color: #363954; /* Mismo fondo oscuro que el visor derecho */
+}
+
+.etiqueta-formulario {
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.campo-formulario {
+    -fx-background-color: #8A93C7; /* Lavanda claro */
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: #E0E4F7;
+    -fx-background-radius: 12;
+    -fx-font-size: 14px;
+    -fx-padding: 8 12 8 12;
+}
+
+/* Ajuste específico para que el TextArea del formulario tenga el fondo lavanda */
+.text-area.campo-formulario .content {
+    -fx-background-color: #8A93C7;
+    -fx-background-radius: 10;
+}
+
+/* --- VENTANAS EMERGENTES (ALERTAS DE BORRAR / AVISOS) --- */
+.dialog-pane {
+    -fx-background-color: #363954;
+}
+
+.dialog-pane .label {
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+}
+
+.dialog-pane:header .header-panel {
+    -fx-background-color: #4D4D6B;
+}
+
+.dialog-pane:header .header-panel .label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 15px;
+}
+
+.dialog-pane .button {
+    -fx-background-color: #3B3B52;
+    -fx-text-fill: white;
+    -fx-background-radius: 12;
+    -fx-padding: 6 16 6 16;
+    -fx-cursor: hand;
+}
+
+.dialog-pane .button:hover {
+    -fx-background-color: #8A93C7;
+}

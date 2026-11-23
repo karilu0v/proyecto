@@ -1,4 +1,0 @@
-título: Nota 4
-Categoría: Categoría 4
----
-Nota de prueba 

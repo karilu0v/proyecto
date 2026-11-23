@@ -5,6 +5,7 @@ public class Nota {
     String titulo;
     String categoria;
     String contenido;
+    String nombreFichero;
 
     public Nota( String titulo, String categoria, String contenido) {
         this.titulo = titulo;
@@ -12,6 +13,12 @@ public class Nota {
         this.contenido = contenido;
     }
     
+    public String getNombreFichero() {
+        return nombreFichero;
+    }
+    public void setNombreFichero(String nombreFichero) {
+        this.nombreFichero = nombreFichero;
+    }
     public java.time.LocalDateTime getFecha() {
         return fecha;
     }
